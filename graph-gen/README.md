@@ -22,20 +22,20 @@ Usage:
 
 Arguments:
 
-`regular         <n> <d> <k> <t> <c> <nt> <seed>           (with 1 <= k <= n and n*d even)`
-`powlaw          <n> <d> <al> <w> <k> <t> <c> <nt> <seed>  (with al < 0.0, 2 <= w <= n, 1 <= k <= n)`
-`regular-rainbow <n> <d> <k> <t> <c> <nt> <seed>           (with 1 <= k <= n and n*d even)`
-`powlaw-rainbow  <n> <d> <al> <w> <k> <t> <c> <nt> <seed>  (with al < 0.0, 2 <= w <= n, 1 <= k <= n)`
-` `
-`	n    - number of nodes`
-`	d    - degree`
-`	k    - multi-set size`
-`	t    - maximum timestamp`
-`	c    - number of colors`
-`	nt   - number of targets`
-`	seed - seed for random graph instance`
-`	al   - alpha (power-law graphs)`
-`	w    - weight (power-law graphs)`
+	regular         <n> <d> <k> <t> <c> <nt> <seed>           (with 1 <= k <= n and n*d even)
+	powlaw          <n> <d> <al> <w> <k> <t> <c> <nt> <seed>  (with al < 0.0, 2 <= w <= n, 1 <= k <= n)
+	regular-rainbow <n> <d> <k> <t> <c> <nt> <seed>           (with 1 <= k <= n and n*d even)
+	powlaw-rainbow  <n> <d> <al> <w> <k> <t> <c> <nt> <seed>  (with al < 0.0, 2 <= w <= n, 1 <= k <= n)
+
+		n    - number of nodes
+		d    - degree
+		k    - multi-set size
+		t    - maximum timestamp
+		c    - number of colors
+		nt   - number of targets
+		seed - seed for random graph instance
+		al   - alpha (power-law graphs)
+		w    - weight (power-law graphs)
 
 ## Example
 
