@@ -2387,9 +2387,6 @@ int main(int argc, char **argv)
             if(!strcmp(argv[f], "-dfs")) {
                 arg_cmd = CMD_BASE_DFS;
             }
-            if(!strcmp(argv[f], "-first")) {
-                arg_cmd = CMD_LIST_FIRST;
-            }
             if(!strcmp(argv[f], "-all")) {
                 arg_cmd = CMD_LIST_ALL;
             }

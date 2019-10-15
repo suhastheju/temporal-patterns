@@ -18,17 +18,17 @@ Use GNU make to build the software. Check 'Makefile' for more details.
 ## Using the software
 Usage: 
 
-`./BASE_PAR <-first> -pre <0/1> -in <input file> -seed <random seed>`
+`./BASE_PAR <-dfs/pathmotif> -pre <0/1> -in <input file> -seed <random seed> -max-itr <iterations>`
 
 Arguments:
-
-        -first       		: <first> extract a solution
-                             
-        -pre <0/1/2/3>      : <0> no preprocessing
-                              <1> preprocessing step-1
-        -in <input file>    : read from <input file>
-                              read from <stdin> by default
-        -seed <random seed> : random seed input
+        -dfs/pathmotif        : <dfs> exhaustive-search baseline
+                                <pathmotif> random-walk baseline
+        -pre <0/1>            : <0> no preprocessing
+                                <1> preprocessing step-1
+        -in <input file>      : read from <input file>
+                                read from <stdin> by default
+        -seed <random seed>   : random seed input
+        -max-itr <iterations> : maximum number of iterations for random-walk
 
 ## Input file format
 We use dimacs format for the input graph. An example of input graph is available in `input-graph.g`. See `graph-gen` for graph generator. 

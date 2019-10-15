@@ -22,9 +22,9 @@ Usage:
 
 Arguments:
 
-        -first       		: <first> extract a solution
+        -first              : <first> extract a solution
 
-		-optimal 			: find optimal solution
+        -optimal            : find optimal solution
                              
         -pre <0/1/2/3>      : <0> no preprocessing
                               <1> preprocessing step-1
@@ -46,14 +46,14 @@ We use dimacs format for the input graph. An example of input graph is available
         build query: [zero: 0.38 ms] [pos: 0.10 ms] [adj: 0.10 ms] [adjsort: 0.08 ms] [shade: 0.04 ms] done. [0.75 ms] {peak: 0.00GiB} {curr: 0.00GiB}
         no preprocessing, default execution
         optimal : 100
-                  100 [1:100]		0x28FA11B2AF010654 84.30 ms [3.04GiB/s, 0.02GHz] 1 {peak: 0.00GiB} {curr: 0.00GiB} -- true
-                   52 [4:100]		0x571743D4C273CBDA 41.90 ms [1.75GiB/s, 0.02GHz] 1 {peak: 0.00GiB} {curr: 0.00GiB} -- true
-                   28 [4:52]		0xFE53DB1DDEFC62CE 26.80 ms [0.87GiB/s, 0.02GHz] 1 {peak: 0.00GiB} {curr: 0.00GiB} -- true
-                   16 [4:28]		0x270A23F153165088 12.52 ms [0.69GiB/s, 0.02GHz] 1 {peak: 0.00GiB} {curr: 0.00GiB} -- true
-                   10 [4:16]		0x0000000000000000 8.46 ms [0.46GiB/s, 0.02GHz] 0 {peak: 0.00GiB} {curr: 0.00GiB} -- false
-                   13 [11:16]		0x493DEFD79A72D4CD 14.02 ms [0.43GiB/s, 0.02GHz] 1 {peak: 0.00GiB} {curr: 0.00GiB} -- true
-                   12 [11:13]		0xB4F17067E64D2CEC 10.17 ms [0.52GiB/s, 0.02GHz] 1 {peak: 0.00GiB} {curr: 0.00GiB} -- true
-                   11 [11:12]		0x66CB3E304689A621 10.03 ms [0.45GiB/s, 0.02GHz] 1 {peak: 0.00GiB} {curr: 0.00GiB} -- true
+                  100 [1:100]       0x28FA11B2AF010654 84.30 ms [3.04GiB/s, 0.02GHz] 1 {peak: 0.00GiB} {curr: 0.00GiB} -- true
+                   52 [4:100]       0x571743D4C273CBDA 41.90 ms [1.75GiB/s, 0.02GHz] 1 {peak: 0.00GiB} {curr: 0.00GiB} -- true
+                   28 [4:52]        0xFE53DB1DDEFC62CE 26.80 ms [0.87GiB/s, 0.02GHz] 1 {peak: 0.00GiB} {curr: 0.00GiB} -- true
+                   16 [4:28]        0x270A23F153165088 12.52 ms [0.69GiB/s, 0.02GHz] 1 {peak: 0.00GiB} {curr: 0.00GiB} -- true
+                   10 [4:16]        0x0000000000000000 8.46 ms [0.46GiB/s, 0.02GHz] 0 {peak: 0.00GiB} {curr: 0.00GiB} -- false
+                   13 [11:16]       0x493DEFD79A72D4CD 14.02 ms [0.43GiB/s, 0.02GHz] 1 {peak: 0.00GiB} {curr: 0.00GiB} -- true
+                   12 [11:13]       0xB4F17067E64D2CEC 10.17 ms [0.52GiB/s, 0.02GHz] 1 {peak: 0.00GiB} {curr: 0.00GiB} -- true
+                   11 [11:12]       0x66CB3E304689A621 10.03 ms [0.45GiB/s, 0.02GHz] 1 {peak: 0.00GiB} {curr: 0.00GiB} -- true
         command: list first
         extract: 100 5 0
                   100 [[0:99]]                                                                                                  0xCA26578CEE26F488 10.98 ms [0.42GiB/s, 0.02GHz] 1 {peak: 0.00GiB} {curr: 0.00GiB} -- true
