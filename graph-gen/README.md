@@ -40,4 +40,6 @@ Arguments:
 ## Example
 
 `$./graph-gen regular 1000 20 5 100 5 10 12345`
+
+
 `$./graph-gen powlaw-rainbow 1000 20 -0.5 100 5 100 5 10 12345`
