@@ -1,3 +1,40 @@
+/*
+ * `Pattern detection in large temporal graphs using algebraic fingerprints`
+ *
+ * This experimental source code is supplied to accompany the
+ * aforementioned paper.
+ *
+ * The source code is configured for a gcc build to a native
+ * microarchitecture that must support the AVX2 and PCLMULQDQ
+ * instruction set extensions. Other builds are possible but
+ * require manual configuration of 'Makefile' and 'builds.h'.
+ *
+ * The source code is subject to the following license.
+ *
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2019 S. Thejaswi, A. Gionis
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ *
+ */
+
 #include<stdio.h>
 #include<stdlib.h>
 #include<assert.h>
@@ -20,15 +57,12 @@
 #define UNDEFINED -1
 #define MATH_INF ((index_t)0x3FFFFFFF)
 
-#include"builds.h"        // get build config
-
 typedef long int index_t; // default to 64-bit indexing
 typedef unsigned int shade_map_t;
 
-
-#include"gf.h"       // finite fields
 #include"ffprng.h"   // fast-forward pseudorandom number generator
 
+typedef unsigned long scalar_t;
 
 /********************************************************************* Flags. */
 
@@ -2211,26 +2245,22 @@ index_t baseline_randwalk_motif(index_t seed, index_t max_itr,
     index_t tmax        = root->tmax;
     index_t *pos        = root->pos;
     index_t *adj        = root->adj;
-    //shade_map_t *shade  = root->shade;
     index_t *color      = root->color;
-    index_t *uu_sol_nt  = alloc_idxtab(k*nt);
-    index_t *tt_sol_nt  = alloc_idxtab(k*nt);
-    index_t *kk_sol_nt  = alloc_idxtab(k*nt);
-    //index_t *color      = alloc_idxtab(n);
+    index_t *uu_tmp_nt  = alloc_idxtab(k*nt);
+    index_t *tt_tmp_nt  = alloc_idxtab(k*nt);
+    index_t *kk_tmp_nt  = alloc_idxtab(k*nt);
     index_t *rand_seeds = alloc_idxtab(max_itr);
+
+    // memory to store one solution per thread
+    index_t *uu_sol_nt      = alloc_idxtab(k*nt);
+    index_t *tt_sol_nt      = alloc_idxtab(k*nt);
+    index_t *kk_sol_nt      = alloc_idxtab(k*nt);
+    index_t *t_opt_nt       = alloc_idxtab(nt);
 
     shellsort(k, kk);
     // random seed for each iteration
     rand_nums(seed, max_itr, rand_seeds);
 
-    /*
-#ifdef BUILD_PARALLEL
-#pragma omp parallel for
-#endif
-    for(index_t u = 0; u < n; u++)
-        color[u] = __builtin_ffs(shade[u]);
-    */
-  
     index_t block_size      = max_itr/nt;
     index_t th_id           = UNDEFINED;
     volatile index_t found  = 0;
@@ -2241,38 +2271,41 @@ index_t baseline_randwalk_motif(index_t seed, index_t max_itr,
         index_t start = 0;
         index_t stop  = (th == nt-1) ? max_itr-1 : (start+block_size-1);
 
+        index_t *uu_tmp = uu_tmp_nt + th*k;
+        index_t *tt_tmp = tt_tmp_nt + th*k;
+        index_t *kk_tmp = kk_tmp_nt + th*k;
+
         index_t *uu_sol = uu_sol_nt + th*k;
         index_t *tt_sol = tt_sol_nt + th*k;
         index_t *kk_sol = kk_sol_nt + th*k;
+        index_t *t_opt  = t_opt_nt + th;
+
+        t_opt = MATH_INF; // initialise to MAX TIME
 
         for(index_t itr = start; itr <= stop; itr++) {
             //push_time();
             if(found) break;
 
             index_t seed_itr = rand_seeds[itr];
-            random_tempwalk(seed_itr, n, k, tmax, pos, adj, uu_sol, tt_sol);
+            random_tempwalk(seed_itr, n, k, tmax, pos, adj, uu_tmp, tt_tmp);
 
             // check if the walk is temporal
             index_t is_temp = 1;
             for(index_t i = 0; i < k-1; i++) {
-                if(tt_sol[i] >= tt_sol[i+1]) {
+                if(tt_tmp[i] >= tt_tmp[i+1]) {
                     is_temp= 0;
                     break;
                 }
             }
 
-            if(!is_temp) {
-                //fprintf(stdout, "%10ld : [%7ld %.4lfms] [not-path]\n", 
-                //                itr+1, uu_sol[0]+1, pop_time());
-                //fflush(stdout);
-                continue;
-            }
+            // continue, if walk is not temporal
+            if(!is_temp) continue;
 
             // check if the walk is a path
             // sort and check if any two consecutive vertices are same
             index_t sol_temp[k];
             for(index_t i = 0; i < k; i++)
-                sol_temp[i] = uu_sol[i];
+                sol_temp[i] = uu_tmp[i];
 
             shellsort(k, sol_temp);
             index_t is_path = 1;
@@ -2283,62 +2316,62 @@ index_t baseline_randwalk_motif(index_t seed, index_t max_itr,
                 }
             }
 
-            if(!is_path) {
-                //fprintf(stdout, "%10ld : [%7ld %.4lfms] [not-path]\n", 
-                //                itr+1, uu_sol[0]+1, pop_time());
-                //fflush(stdout);
-                continue;
-            }
+            // continue, if walk is not a path
+            if(!is_path) continue;
 
             // check if the colors in multiset match with path
-            for(index_t i = 0; i < k; i++)
-                kk_sol[i] = color[uu_sol[i]];
-                //kk_sol[i] = __builtin_ffs(shade[uu_sol[i]]);
-
-            shellsort(k, kk_sol);
-
-            index_t kk_match = 1;
-            // check if the colors match
             for(index_t i = 0; i < k; i++) {
-                if(kk[i] != kk_sol[i]) {
+                kk_tmp[i] = color[uu_tmp[i]];
+                //kk_tmp[i] = __builtin_ffs(shade[uu_tmp[i]]);
+            }
+
+            // sort colors of math
+            shellsort(k, kk_tmp);
+
+            // check if the colors match
+            index_t kk_match = 1;
+            for(index_t i = 0; i < k; i++) {
+                if(kk[i] != kk_tmp[i]) {
                     kk_match = 0;
                     break;
                 }
             }
 
-            if(!kk_match){
-                //fprintf(stdout, "%10ld : [%7ld ] [not-motif] ", 
-                //                itr+1, uu_sol[0]+1);
-                //for(index_t i = 0; i < k; i++)
-                //    fprintf(stdout, "%ld%s", kk_sol[i], i==k-1?"\n":" ");
-                //fflush(stdout);
-                continue;
-            }
+            // continue, if colors do not match
+            if(!kk_match) continue;
 
+            // found a motif match
             if(is_path && kk_match) {
                 found = 1;
                 th_id = th;
-                //fprintf(stdout, "%10ld : [%7ld %.4lfms] [path-found]\n", 
-                //                itr+1, uu_sol[0]+1, pop_time());
                 continue;
+
+                // TODO: update solution if the max-time is less than the
+                // current solution
             }
         }
     }
 
     if(found) {
         assert(th_id != UNDEFINED);
-        index_t *uu_sol = uu_sol_nt + k*th_id;
-        index_t *tt_sol = kk_sol_nt + k*th_id;
+        index_t *uu_tmp = uu_tmp_nt + k*th_id;
+        index_t *tt_tmp = kk_tmp_nt + k*th_id;
         for(index_t i = 0; i < k; i++) 
-            uu_out[i] = uu_sol[i];
+            uu_out[i] = uu_tmp[i];
 
         for(index_t i = 0; i < k; i++)
-            tt_out[i] = tt_sol[i];
+            tt_out[i] = tt_tmp[i];
     }
+
+    FREE(uu_tmp_nt);
+    FREE(tt_tmp_nt);
+    FREE(kk_tmp_nt);
 
     FREE(uu_sol_nt);
     FREE(tt_sol_nt);
     FREE(kk_sol_nt);
+    FREE(t_opt_nt);
+
     FREE(color);
     FREE(rand_seeds);
     fprintf(stdout, "baseline-temppath: [%.4lfms] ", pop_time());
@@ -2358,8 +2391,6 @@ index_t baseline_randwalk_motif(index_t seed, index_t max_itr,
 
 int main(int argc, char **argv)
 {
-    GF_PRECOMPUTE;
-
     push_time();
     push_memtrack();
     
@@ -2467,15 +2498,11 @@ int main(int argc, char **argv)
     } else {
         root = build_temppathq(g, k, kk);
     }
-    graph_free(g);
-    //FREE(kk);
-
-    //print_temppathq(root);
+    graph_free(g); // free graph
 
     push_time();
+    // preprocess query and time it
     push_time();
-
-    // preprocess query
     index_t *v_map1;
     switch(precomp) {
     case PRE_NOP:

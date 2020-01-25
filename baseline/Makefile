@@ -1,14 +1,14 @@
 MAKE = make
-CC = g++
-CFLAGS = -O5 -Wall -march=native -std=c++11 -fopenmp
+CC = gcc
+CFLAGS = -O5 -Wall -march=native -std=c99 -fopenmp
 BIN = BASE_SIN BASE_PAR
 
 all: $(BIN)
 
-BASE_PAR: base.c builds.h gf.h ffprng.h
+BASE_PAR: base.c ffprng.h
 	$(CC) $(CFLAGS) -DLISTER_DEFAULT -o BASE_PAR base.c
 
-BASE_SIN: base.c builds.h gf.h ffprng.h
+BASE_SIN: base.c ffprng.h
 	$(CC) $(CFLAGS) -DLISTER_SINGLE -o BASE_SIN base.c
 
 clean:	

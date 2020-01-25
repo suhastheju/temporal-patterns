@@ -1,13 +1,6 @@
 /* 
- * This file is part of an experimental software implementation of
- * graph motif search utilizing the constrained multilinear 
- * sieving framework; cf. 
- * 
- *    A. Björklund, P. Kaski, Ł. Kowalik, J. Lauri,
- *    "Engineering motif search for large graphs",
- *    ALENEX15 Meeting on Algorithm Engineering and Experiments,
- *    5 January 2015, San Diego, CA.
- * 
+ * `Pattern detection in large temporal graphs using algebraic fingerprints`
+ *
  * This experimental source code is supplied to accompany the 
  * aforementioned paper. 
  * 
@@ -20,7 +13,9 @@
  * 
  * The MIT License (MIT)
  * 
- * Copyright (c) 2014 A. Björklund, P. Kaski, Ł. Kowalik, J. Lauri
+ * Copyright (c) 2019 S. Thejaswi, A. Gionis
+ * Copyright (c) 2018 P. Kaski, J. Lauri, S. Thejaswi
+ * Copyright (c) 2014 A. Björklund, P. Kaski,L Kowalik, J. Lauri
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal

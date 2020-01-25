@@ -6,6 +6,7 @@
  * The source code is subject to the following license.
  *
  * Copyright (c) 2019 S. Thejaswi, A. Gionis
+ * Copyright (c) 2018 P. Kaski, J. Lauri, S. Thejaswi
  * Copyright (c) 2014 A. Björklund, P. Kaski,L. Kowalik, J. Lauri
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
